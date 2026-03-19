@@ -106,20 +106,3 @@ npx serve .
 Aviso importante: Melhor experiência em tela cheia (F11).
 A encruzilhada não cabe em janelinha.
 
-🔗 ENCRUZILHADA DIGITAL — PORTAIS
-<img src="https://img.shields.io/badge/%F0%9F%8C%B9_ALMAS_DE_POMBAGIRA-BIO.SITE-ff0000?style=for-the-badge&#x26;logoColor=white&#x26;labelColor=1a0000" alt="Bio">
-<img src="https://img.shields.io/badge/%F0%9F%94%A5_ALEXIA_ROSA_DE_FOGO-LINKTREE-ff6600?style=for-the-badge&#x26;logo=linktree&#x26;logoColor=white&#x26;labelColor=1a0000" alt="Linktree">
-<img src="https://img.shields.io/badge/%F0%9F%94%B1_PORTAL_POMBAGIRAS-CANVA-cc0066?style=for-the-badge&#x26;logo=canva&#x26;logoColor=white&#x26;labelColor=1a0000" alt="Canva">
-
-
-⚡ GitHub Sagrado
-<img src="https://img.shields.io/badge/%E2%9A%A1_POMBAGIRAS-GITHUB-990033?style=for-the-badge&#x26;logo=github&#x26;logoColor=white&#x26;labelColor=0d0d0d" alt="Pombagiras">
-<img src="https://img.shields.io/badge/%F0%9F%8F%B3%EF%B8%8F%E2%80%8D%E2%9A%A7%EF%B8%8F_ORGULHO_TRANS-GITHUB-ff69b4?style=for-the-badge&#x26;logo=github&#x26;logoColor=white&#x26;labelColor=0d0d0d" alt="Orgulho Trans">
-<img src="https://img.shields.io/badge/%E2%9A%A1_ALEXIA_LUZ_DE_FERRO-GITHUB-ff3333?style=for-the-badge&#x26;logo=github&#x26;logoColor=white&#x26;labelColor=0d0d0d" alt="Alexia">
-
-
-
-<img src="https://raw.githubusercontent.com/pombagiras/melusine/refs/heads/main/Al%C3%AA%20(3)%20(3)%20(1).png" alt="Sua foto">
-
-
-Alexia na encruzilhada
