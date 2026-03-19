@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pombagira — Encruzilhada Cinematográfica</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;700&family=MedievalSharp&display=swap');
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Cinzel',serif}
+#entry-screen{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at center,#1a0000,#000);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:opacity 1.5s}
+#entry-screen.hidden{opacity:0;pointer-events:none}
+#entry-screen h1{font-family:'Cinzel Decorative',serif;font-size:clamp(2rem,6vw,5rem);color:#8b0000;text-shadow:0 0 30px #ff0000,0 0 60px #8b0000;letter-spacing:0.3em;animation:pulseTitle 3s ease-in-out infinite}
+#entry-screen p{color:#666;font-size:1.1rem;margin-top:2rem;letter-spacing:0.5em;text-transform:uppercase;animation:fadeInOut 2s ease-in-out infinite}
+#entry-screen .subtitle{color:#8b000099;font-size:0.8rem;margin-top:3rem;letter-spacing:0.2em;font-style:italic}
+@keyframes pulseTitle{0%,100%{text-shadow:0 0 30px #ff0000,0 0 60px #8b0000}50%{text-shadow:0 0 60px #ff0000,0 0 120px #8b0000,0 0 180px #ff000044}}
+@keyframes fadeInOut{0%,100%{opacity:0.3}50%{opacity:1}}
+#scene{position:fixed;inset:0;overflow:hidden;opacity:0;transition:opacity 2s}
+#scene.active{opacity:1}
+/* Sky */
+.sky{position:absolute;inset:0;background:linear-gradient(180deg,#050510 0%,#0a0a1a 30%,#1a0a15 60%,#0d0d0d 100%)}
+.stars{position:absolute;inset:0}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d) ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:0.2;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}}
+/* Moon */
+.moon{position:absolute;top:8%;right:15%;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fffde8,#f5e6c8,#d4a574);box-shadow:0 0 40px #f5e6c855,0 0 80px #f5e6c833,0 0 120px #ff660011;animation:moonGlow 6s ease-in-out infinite}
+.moon::after{content:'';position:absolute;top:15%;left:20%;width:15px;height:15px;border-radius:50%;background:#d4a57444;box-shadow:25px 10px 0 5px #d4a57433,10px 30px 0 3px #d4a57422}
+@keyframes moonGlow{0%,100%{box-shadow:0 0 40px #f5e6c855,0 0 80px #f5e6c833}50%{box-shadow:0 0 60px #f5e6c877,0 0 120px #f5e6c855,0 0 200px #ff000011}}
+/* Ground */
+.ground{position:absolute;bottom:0;left:0;right:0;height:35%;background:linear-gradient(180deg,#1a1a1a,#0d0d0d,#050505);border-top:1px solid #2a2a2a}
+.ground::before{content:'';position:absolute;top:-2px;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#3a3a3a55,transparent)}
+/* Fog */
+.fog{position:absolute;bottom:20%;left:-100%;width:300%;height:200px;background:linear-gradient(90deg,transparent,#ffffff08,#ffffff05,transparent);animation:fogDrift 20s linear infinite}
+.fog:nth-child(2){bottom:25%;animation-duration:25s;animation-delay:-8s;opacity:0.5}
+.fog:nth-child(3){bottom:30%;animation-duration:30s;animation-delay:-15s;opacity:0.3}
+@keyframes fogDrift{0%{transform:translateX(0)}100%{transform:translateX(33.33%)}}
+/* Mausoleum */
+.mausoleum{position:absolute;bottom:28%}
+.mausoleum-left{left:3%}
+.mausoleum-right{right:3%}
+.mausoleum-body{width:120px;height:180px;background:linear-gradient(135deg,#3a3a3a,#2a2a2a,#1a1a1a);border:1px solid #4a4a4a33;position:relative}
+.mausoleum-body::before{content:'';position:absolute;top:20px;left:50%;transform:translateX(-50%);width:30px;height:50px;border-radius:15px 15px 0 0;background:#0a0a0a;border:1px solid #3a3a3a55}
+.mausoleum-body::after{content:'✝';position:absolute;top:30px;left:50%;transform:translateX(-50%);font-size:1.5rem;color:#4a4a4a55}
+.mausoleum-roof{width:140px;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-bottom:40px solid #3a3a3a;margin-left:-10px;position:relative}
+.mausoleum-roof::after{content:'';position:absolute;top:40px;left:-5px;width:140px;height:5px;background:#4a4a4a}
+.column{position:absolute;bottom:0;width:12px;height:190px;background:linear-gradient(90deg,#4a4a4a,#3a3a3a,#2a2a2a)}
+.column-left{left:-5px}
+.column-right{right:-5px}
+.column::before{content:'';position:absolute;top:0;left:-3px;width:18px;height:8px;background:#4a4a4a}
+.column::after{content:'';position:absolute;bottom:0;left:-3px;width:18px;height:8px;background:#4a4a4a}
+/* Angel Statue */
+.angel{position:absolute;left:18%;bottom:30%;width:80px;height:160px;opacity:0.7;animation:angelFlicker 8s ease-in-out infinite}
+@keyframes angelFlicker{0%,100%{opacity:0.7;filter:brightness(0.8)}50%{opacity:0.5;filter:brightness(0.6)}}
+/* Demon Statue */
+.demon{position:absolute;right:18%;bottom:30%;width:80px;height:160px;opacity:0.6;animation:demonPulse 5s ease-in-out infinite}
+@keyframes demonPulse{0%,100%{opacity:0.6;filter:drop-shadow(0 0 5px #ff000033)}50%{opacity:0.8;filter:drop-shadow(0 0 15px #ff000066)}}
+/* Woman Figure */
+.woman-container{position:absolute;bottom:28%;left:50%;transform:translateX(-50%);z-index:50;animation:womanWalk 2s ease-in-out infinite}
+@keyframes womanWalk{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-3px)}}
+/* Lip sync indicator */
+.lip-sync{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:8px;background:#cc3333;border-radius:50%;transition:height 0.1s;animation:lipMove 0.3s ease-in-out infinite alternate}
+@keyframes lipMove{0%{height:3px;border-radius:50%}100%{height:8px;border-radius:40%}}
+/* Rose Petals Canvas */
+#petals-canvas{position:absolute;inset:0;z-index:30;pointer-events:none;mix-blend-mode:screen}
+/* Trident Canvas */
+#trident-canvas{position:absolute;inset:0;z-index:25;pointer-events:none}
+/* Spectral Overlays */
+.spectral{position:absolute;bottom:20%;z-index:20;opacity:0;transition:opacity 3s;pointer-events:none}
+.spectral.visible{opacity:0.6}
+.spectral-rosa{left:8%;animation:spectralFloat 6s ease-in-out infinite}
+.spectral-mulambo{right:8%;animation:spectralFloat 7s ease-in-out infinite reverse}
+@keyframes spectralFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-15px) scale(1.03)}}
+.spectral svg{filter:blur(1px)}
+.spectral-rosa svg{filter:blur(1px) drop-shadow(0 0 20px #ff69b4)}
+.spectral-mulambo svg{filter:blur(1px) drop-shadow(0 0 20px #9932cc)}
+/* Speech */
+#speech-box{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);z-index:70;text-align:center;width:80%;max-width:700px;pointer-events:none}
+#speech-text{color:#e0d0c0;font-family:'Cinzel',serif;font-size:clamp(0.9rem,2.5vw,1.3rem);text-shadow:0 0 10px #000,0 0 20px #000,2px 2px 4px #000;line-height:1.8;letter-spacing:0.05em;opacity:0;transition:opacity 1s}
+#speech-text.visible{opacity:1}
+#speech-text .highlight{color:#ff4444;font-weight:700}
+/* Film Grain */
+.grain{position:fixed;inset:0;z-index:80;pointer-events:none;opacity:0.06;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");animation:grainShift 0.1s steps(3) infinite}
+@keyframes grainShift{0%{transform:translate(0,0)}33%{transform:translate(-1px,1px)}66%{transform:translate(1px,-1px)}100%{transform:translate(-1px,-1px)}}
+/* Scan Line */
+.scanline{position:fixed;inset:0;z-index:81;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,#00000015 2px,#00000015 4px)}
+.scanline::after{content:'';position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#ffffff08,transparent);animation:scanMove 4s linear infinite}
+@keyframes scanMove{0%{top:-3px}100%{top:100%}}
+/* Vignette */
+.vignette{position:fixed;inset:0;z-index:75;pointer-events:none;background:radial-gradient(ellipse at center,transparent 40%,#00000088 70%,#000000cc 100%);animation:vignetteBreath 8s ease-in-out infinite}
+@keyframes vignetteBreath{0%,100%{background:radial-gradient(ellipse at center,transparent 40%,#00000088 70%,#000000cc 100%)}50%{background:radial-gradient(ellipse at center,transparent 30%,#1a000088 60%,#000000dd 100%)}}
+/* Chromatic Aberration Edges */
+.chroma-left,.chroma-right{position:fixed;top:0;bottom:0;width:60px;z-index:76;pointer-events:none}
+.chroma-left{left:0;background:linear-gradient(90deg,#ff000008,transparent)}
+.chroma-right{right:0;background:linear-gradient(270deg,#0000ff08,transparent)}
+/* Letterbox */
+.letterbox-top,.letterbox-bottom{position:fixed;left:0;right:0;height:clamp(30px,6vh,60px);background:#000;z-index:90}
+.letterbox-top{top:0}
+.letterbox-bottom{bottom:0}
+/* Timecode */
+.timecode{position:fixed;bottom:clamp(32px,6.2vh,62px);right:15px;z-index:91;font-family:'Courier New',monospace;font-size:0.7rem;color:#ff333388;letter-spacing:0.15em}
+/* Camera Label */
+.camera-label{position:fixed;top:clamp(32px,6.2vh,62px);left:15px;z-index:91;font-family:'Courier New',monospace;font-size:0.65rem;color:#ff333366;letter-spacing:0.1em;text-transform:uppercase}
+.rec{display:inline-block;width:6px;height:6px;background:#f00;border-radius:50%;margin-right:6px;animation:recBlink 1s step-end infinite}
+@keyframes recBlink{0%,100%{opacity:1}50%{opacity:0}}
+/* Camera Motions */
+.camera-wrapper{position:absolute;inset:0;transform-origin:center center;transition:transform 3s cubic-bezier(0.25,0.46,0.45,0.94)}
+.cam-dolly-in{transform:scale(1.15) translateZ(0)}
+.cam-vertigo{transform:scale(1.3) perspective(800px) translateZ(50px)}
+.cam-fpv-dive{transform:scale(1.1) rotateX(8deg) translateY(-30px)}
+.cam-crane{transform:scale(0.95) translateY(40px) rotateX(-3deg)}
+.cam-orbit{transform:scale(1.05) rotateY(5deg) perspective(1000px)}
+/* Color wash phases */
+.color-wash{position:fixed;inset:0;z-index:74;pointer-events:none;opacity:0;transition:opacity 2s,background 2s}
+.color-wash.active{opacity:1}
+/* Moonbeam */
+.moonbeam{position:absolute;top:12%;right:18%;width:200px;height:500px;background:linear-gradient(180deg,#fffde822,#fffde808,transparent);transform:rotate(15deg);transform-origin:top center;opacity:0.4;z-index:5;animation:beamFlicker 10s ease-in-out infinite}
+@keyframes beamFlicker{0%,100%{opacity:0.4}50%{opacity:0.25}}
+/* Additional atmospheric elements */
+.cross{position:absolute;color:#3a3a3a;font-size:2rem;opacity:0.3}
+.cross-1{bottom:32%;left:30%}
+.cross-2{bottom:35%;right:28%}
+.cross-3{bottom:30%;left:42%}
+/* Responsive */
+@media(max-width:600px){
+.mausoleum-body{width:70px;height:110px}
+.mausoleum-roof{width:90px;border-bottom-width:25px;margin-left:-10px}
+.column{height:120px;width:8px}
+.angel,.demon{width:50px;height:100px}
+.moon{width:50px;height:50px}
+.spectral svg{width:100px}
+}
+</style>
+</head>
+<body>
+<!-- ENTRY SCREEN -->
+<div id="entry-screen" onclick="startExperience()">
+  <h1>POMBAGIRA</h1>
+  <p>▸ Entrar na Encruzilhada ◂</p>
+  <div class="subtitle">"Quem chama sem saber, paga sem querer"</div>
+</div>
+<!-- MAIN SCENE -->
+<div id="scene">
+  <div class="camera-wrapper" id="camera">
+    <!-- Sky -->
+    <div class="sky">
+      <div class="stars" id="stars"></div>
+      <div class="moon"></div>
+      <div class="moonbeam"></div>
+    </div>
+    <!-- Ground & Fog -->
+    <div class="ground"></div>
+    <div class="fog"></div>
+    <div class="fog"></div>
+    <div class="fog"></div>
+    <!-- Mausoleums -->
+    <div class="mausoleum mausoleum-left">
+      <div class="mausoleum-roof"></div>
+      <div class="mausoleum-body">
+        <div class="column column-left"></div>
+        <div class="column column-right"></div>
+      </div>
+    </div>
+    <div class="mausoleum mausoleum-right">
+      <div class="mausoleum-roof"></div>
+      <div class="mausoleum-body">
+        <div class="column column-left"></div>
+        <div class="column column-right"></div>
+      </div>
+    </div>
+    <!-- Crosses -->
+    <div class="cross cross-1">✝</div>
+    <div class="cross cross-2">✝</div>
+    <div class="cross cross-3">✝</div>
+    <!-- Angel Statue (cracked) -->
+    <div class="angel">
+      <svg viewBox="0 0 80 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="40" cy="18" rx="12" ry="14" fill="#4a4a4a"/>
+        <path d="M28 32 L52 32 L55 90 L25 90Z" fill="#3a3a3a"/>
+        <path d="M15 40 Q5 25 10 50 Q12 60 20 55" fill="#3a3a3a88" stroke="#4a4a4a44"/>
+        <path d="M65 40 Q75 25 70 50 Q68 60 60 55" fill="#3a3a3a88" stroke="#4a4a4a44"/>
+        <path d="M30 90 L28 140 L35 140" fill="#3a3a3a"/>
+        <path d="M50 90 L52 140 L45 140" fill="#3a3a3a"/>
+        <line x1="20" y1="25" x2="45" y2="70" stroke="#8b0000" stroke-width="1.5" opacity="0.6"/>
+        <line x1="35" y1="10" x2="55" y2="50" stroke="#8b0000" stroke-width="1" opacity="0.5"/>
+        <line x1="30" y1="60" x2="50" y2="100" stroke="#8b0000" stroke-width="1" opacity="0.4"/>
+        <circle cx="36" cy="14" r="1.5" fill="#2a2a2a"/>
+        <circle cx="44" cy="14" r="1.5" fill="#2a2a2a"/>
+        <ellipse cx="40" cy="22" rx="3" ry="1.5" fill="#2a2a2a"/>
+      </svg>
+    </div>
+    <!-- Demon Statue (distorted) -->
+    <div class="demon">
+      <svg viewBox="0 0 80 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="40" cy="20" rx="14" ry="16" fill="#3a3a3a"/>
+        <path d="M28 8 Q22 -5 26 12" fill="#3a3a3a" stroke="#4a4a4a"/>
+        <path d="M52 8 Q58 -5 54 12" fill="#3a3a3a" stroke="#4a4a4a"/>
+        <circle cx="34" cy="17" r="3" fill="#1a0000">
+          <animate attributeName="fill" values="#1a0000;#ff0000;#1a0000" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="46" cy="17" r="3" fill="#1a0000">
+          <animate attributeName="fill" values="#1a0000;#ff0000;#1a0000" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <path d="M35 28 Q40 33 45 28" stroke="#2a2a2a" stroke-width="1.5" fill="none"/>
+        <path d="M25 36 L55 36 L58 100 L22 100Z" fill="#333"/>
+        <path d="M22 100 L20 150 L30 150" fill="#333"/>
+        <path d="M58 100 L60 150 L50 150" fill="#333"/>
+        <path d="M35 36 L33 70 M45 36 L47 70" stroke="#2a2a2a" stroke-width="0.5" opacity="0.5"/>
+      </svg>
+    </div>
+    <!-- SPECTRAL: Pombagira Rosa Caveira -->
+    <div class="spectral spectral-rosa" id="spectral-rosa">
+      <svg width="150" height="250" viewBox="0 0 150 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="rosaGlow" cx="50%" cy="30%" r="60%">
+            <stop offset="0%" stop-color="#ff69b4" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#ff69b4" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="75" cy="125" rx="60" ry="120" fill="url(#rosaGlow)"/>
+        <ellipse cx="75" cy="40" rx="18" ry="22" fill="#ff69b422" stroke="#ff69b444" stroke-width="1"/>
+        <circle cx="68" cy="36" r="4" fill="#0a0a0a" stroke="#ff69b444"/>
+        <circle cx="82" cy="36" r="4" fill="#0a0a0a" stroke="#ff69b444"/>
+        <path d="M68 48 L75 52 L82 48" stroke="#ff69b466" stroke-width="1" fill="none"/>
+        <ellipse cx="75" cy="50" rx="4" ry="2" fill="#1a1a1a" stroke="#ff69b433"/>
+        <!-- Rose Crown -->
+        <circle cx="60" cy="20" r="5" fill="#ff1a5e33" stroke="#ff69b444"/>
+        <circle cx="75" cy="15" r="6" fill="#ff1a5e44" stroke="#ff69b455"/>
+        <circle cx="90" cy="20" r="5" fill="#ff1a5e33" stroke="#ff69b444"/>
+        <circle cx="67" cy="14" r="3" fill="#ff1a5e22"/>
+        <circle cx="83" cy="14" r="3" fill="#ff1a5e22"/>
+        <!-- Body -->
+        <path d="M55 60 Q45 130 30 240 L120 240 Q105 130 95 60Z" fill="#ff69b411" stroke="#ff69b422"/>
+        <!-- Arms -->
+        <path d="M55 70 Q30 90 25 120" stroke="#ff69b422" stroke-width="1.5" fill="none"/>
+        <path d="M95 70 Q120 90 125 120" stroke="#ff69b422" stroke-width="1.5" fill="none"/>
+        <text x="75" y="180" text-anchor="middle" font-size="8" fill="#ff69b466" font-family="Cinzel">ROSA CAVEIRA</text>
+      </svg>
+    </div>
+    <!-- SPECTRAL: Pombagira Mulambo -->
+    <div class="spectral spectral-mulambo" id="spectral-mulambo">
+      <svg width="150" height="250" viewBox="0 0 150 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="mulamboGlow" cx="50%" cy="30%" r="60%">
+            <stop offset="0%" stop-color="#9932cc" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#9932cc" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="75" cy="125" rx="60" ry="120" fill="url(#mulamboGlow)"/>
+        <ellipse cx="75" cy="40" rx="16" ry="20" fill="#9932cc22" stroke="#9932cc44"/>
+        <circle cx="69" cy="37" r="3" fill="#0a0a0a" stroke="#9932cc44"/>
+        <circle cx="81" cy="37" r="3" fill="#0a0a0a" stroke="#9932cc44"/>
+        <path d="M70 47 Q75 50 80 47" stroke="#9932cc55" fill="none"/>
+        <!-- Tattered cloth body -->
+        <path d="M58 58 L40 240 L50 235 L45 240 L60 230 L55 240 L70 235 L75 245 L80 235 L90 240 L85 230 L100 240 L95 235 L110 240 L92 58Z" fill="#9932cc15" stroke="#9932cc33"/>
+        <!-- Chain links -->
+        <ellipse cx="65" cy="62" rx="4" ry="3" fill="none" stroke="#66666688" stroke-width="1.5"/>
+        <ellipse cx="73" cy="63" rx="4" ry="3" fill="none" stroke="#66666688" stroke-width="1.5"/>
+        <ellipse cx="81" cy="62" rx="4" ry="3" fill="none" stroke="#66666688" stroke-width="1.5"/>
+        <ellipse cx="89" cy="63" rx="4" ry="3" fill="none" stroke="#66666688" stroke-width="1.5"/>
+        <!-- Hanging chain -->
+        <path d="M65 65 L60 90 M73 66 L70 95 M81 65 L83 88 M89 66 L92 92" stroke="#55555566" stroke-width="1" stroke-dasharray="3,2"/>
+        <!-- Wild hair -->
+        <path d="M60 25 Q50 10 45 30 M65 22 Q58 5 55 25 M85 22 Q92 5 95 25 M90 25 Q100 10 105 30" stroke="#9932cc33" stroke-width="1.5" fill="none"/>
+        <text x="75" y="215" text-anchor="middle" font-size="8" fill="#9932cc66" font-family="Cinzel">MULAMBO</text>
+      </svg>
+    </div>
+    <!-- WOMAN IN BLACK DRESS -->
+    <div class="woman-container" id="woman">
+      <svg width="60" height="140" viewBox="0 0 60 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Hair flowing -->
+        <path d="M22 5 Q15 -2 12 10 Q10 18 18 20" fill="#1a1a1a" stroke="#2a2a2a55"/>
+        <path d="M38 5 Q45 -2 48 10 Q50 18 42 20" fill="#1a1a1a" stroke="#2a2a2a55"/>
+        <path d="M20 15 Q10 20 8 35" stroke="#1a1a1a" stroke-width="2" fill="none">
+          <animate attributeName="d" values="M20 15 Q10 20 8 35;M20 15 Q8 22 6 35;M20 15 Q10 20 8 35" dur="3s" repeatCount="indefinite"/>
+        </path>
+        <path d="M40 15 Q50 20 52 35" stroke="#1a1a1a" stroke-width="2" fill="none">
+          <animate attributeName="d" values="M40 15 Q50 20 52 35;M40 15 Q52 22 54 35;M40 15 Q50 20 52 35" dur="3s" repeatCount="indefinite"/>
+        </path>
+        <!-- Head -->
+        <ellipse cx="30" cy="15" rx="10" ry="12" fill="#2a2020"/>
+        <!-- Eyes -->
+        <ellipse cx="26" cy="13" rx="1.5" ry="1" fill="#888"/>
+        <ellipse cx="34" cy="13" r="1.5" ry="1" fill="#888"/>
+        <!-- Mouth (lip sync) -->
+        <ellipse cx="30" cy="21" rx="3" ry="1.5" fill="#550000">
+          <animate attributeName="ry" values="1;2.5;0.5;2;1" dur="0.4s" repeatCount="indefinite"/>
+          <animate attributeName="rx" values="3;2;3.5;2.5;3" dur="0.4s" repeatCount="indefinite"/>
+        </ellipse>
+        <!-- Neck -->
+        <rect x="27" y="26" width="6" height="6" fill="#2a2020"/>
+        <!-- Black Dress Body -->
+        <path d="M18 32 Q15 70 8 138 L52 138 Q45 70 42 32Z" fill="#0a0a0a" stroke="#1a1a1a">
+          <animate attributeName="d" values="M18 32 Q15 70 8 138 L52 138 Q45 70 42 32Z;M18 32 Q14 70 6 138 L54 138 Q46 70 42 32Z;M18 32 Q15 70 8 138 L52 138 Q45 70 42 32Z" dur="2s" repeatCount="indefinite"/>
+        </path>
+        <!-- Dress detail -->
+        <path d="M20 50 Q30 55 40 50" stroke="#1a1a1a" fill="none" opacity="0.5"/>
+        <path d="M15 80 Q30 85 45 80" stroke="#1a1a1a" fill="none" opacity="0.3"/>
+        <!-- Arms -->
+        <path d="M18 35 Q8 50 12 65" stroke="#2a2020" stroke-width="3" fill="none">
+          <animate attributeName="d" values="M18 35 Q8 50 12 65;M18 35 Q6 48 10 65;M18 35 Q8 50 12 65" dur="3s" repeatCount="indefinite"/>
+        </path>
+        <path d="M42 35 Q52 50 48 65" stroke="#2a2020" stroke-width="3" fill="none">
+          <animate attributeName="d" values="M42 35 Q52 50 48 65;M42 35 Q54 48 50 65;M42 35 Q52 50 48 65" dur="3s" repeatCount="indefinite"/>
+        </path>
+      </svg>
+    </div>
+    <!-- Rose Petals Canvas -->
+    <canvas id="petals-canvas"></canvas>
+    <!-- Trident Canvas -->
+    <canvas id="trident-canvas"></canvas>
+  </div><!-- end camera-wrapper -->
+  <!-- Color Wash -->
+  <div class="color-wash" id="color-wash"></div>
+  <!-- Post-processing overlays -->
+  <div class="vignette"></div>
+  <div class="chroma-left"></div>
+  <div class="chroma-right"></div>
+  <div class="grain"></div>
+  <div class="scanline"></div>
+  <!-- Speech -->
+  <div id="speech-box">
+    <div id="speech-text"></div>
+  </div>
+  <!-- Letterbox -->
+  <div class="letterbox-top"></div>
+  <div class="letterbox-bottom"></div>
+  <!-- HUD -->
+  <div class="timecode" id="timecode">00:00:00:00</div>
+  <div class="camera-label"><span class="rec"></span><span id="cam-label">FAST DOLLY IN</span></div>
+</div>
+<script>
+// ─── GLOBALS ───
+let started = false;
+let startTime = 0;
+const petalsCanvas = document.getElementById('petals-canvas');
+const petalsCtx = petalsCanvas.getContext('2d');
+const tridentCanvas = document.getElementById('trident-canvas');
+const tridentCtx = tridentCanvas.getContext('2d');
+// ─── STARS ───
+function createStars() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 2 + 0.5;
+    star.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*60}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;animation-delay:${Math.random()*3}s`;
+    container.appendChild(star);
+  }
+}
+// ─── RESIZE CANVASES ───
+function resizeCanvases() {
+  petalsCanvas.width = window.innerWidth;
+  petalsCanvas.height = window.innerHeight;
+  tridentCanvas.width = window.innerWidth;
+  tridentCanvas.height = window.innerHeight;
+}
+// ─── ROSE PETALS ───
+const petals = [];
+function initPetals() {
+  for (let i = 0; i < 50; i++) {
+    petals.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      size: 3 + Math.random() * 6,
+      speedX: 0.3 + Math.random() * 1.5,
+      speedY: -0.5 + Math.random() * 1.2,
+      rotation: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.05,
+      wobblePhase: Math.random() * Math.PI * 2,
+      wobbleSpeed: 0.01 + Math.random() * 0.03,
+      opacity: 0.4 + Math.random() * 0.5,
+      r: 120 + Math.random() * 80,
+      g: 10 + Math.random() * 30,
+      b: 30 + Math.random() * 40
+    });
+  }
+}
+function drawPetal(ctx, p) {
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.rotate(p.rotation);
+  ctx.globalAlpha = p.opacity;
+  ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+  ctx.beginPath();
+  ctx.moveTo(0, -p.size);
+  ctx.bezierCurveTo(p.size * 0.8, -p.size * 0.6, p.size * 0.6, p.size * 0.3, 0, p.size);
+  ctx.bezierCurveTo(-p.size * 0.6, p.size * 0.3, -p.size * 0.8, -p.size * 0.6, 0, -p.size);
+  ctx.fill();
+  ctx.restore();
+}
+function updatePetals() {
+  petalsCtx.clearRect(0, 0, petalsCanvas.width, petalsCanvas.height);
+  for (const p of petals) {
+    p.wobblePhase += p.wobbleSpeed;
+    p.x += p.speedX + Math.sin(p.wobblePhase) * 0.8;
+    p.y += p.speedY + Math.cos(p.wobblePhase) * 0.3;
+    p.rotation += p.rotSpeed;
+    if (p.x > window.innerWidth + 20) { p.x = -20; p.y = Math.random() * window.innerHeight; }
+    if (p.y > window.innerHeight + 20 || p.y < -20) { p.y = -10; p.x = Math.random() * window.innerWidth; }
+    drawPetal(petalsCtx, p);
+  }
+}
+// ─── TRIDENT & FLAMES ───
+const flames = [];
+function spawnFlame(baseX, baseY) {
+  flames.push({
+    x: baseX + (Math.random() - 0.5) * 4,
+    y: baseY,
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: -(1 + Math.random() * 2.5),
+    life: 1,
+    decay: 0.01 + Math.random() * 0.02,
+    size: 2 + Math.random() * 4
+  });
+}
+function drawTrident() {
+  const ctx = tridentCtx;
+  const cx = window.innerWidth * 0.5;
+  const by = window.innerHeight * 0.72;
+  ctx.clearRect(0, 0, tridentCanvas.width, tridentCanvas.height);
+  // Trident handle
+  ctx.strokeStyle = '#4a4a4a';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(cx, by);
+  ctx.lineTo(cx, by - 100);
+  ctx.stroke();
+  // Prongs
+  const prongTops = [
+    { x: cx - 18, y: by - 130 },
+    { x: cx, y: by - 140 },
+    { x: cx + 18, y: by - 130 }
+  ];
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 2.5;
+  // Left prong
+  ctx.beginPath();
+  ctx.moveTo(cx - 5, by - 100);
+  ctx.quadraticCurveTo(cx - 15, by - 110, prongTops[0].x, prongTops[0].y);
+  ctx.stroke();
+  // Center prong
+  ctx.beginPath();
+  ctx.moveTo(cx, by - 100);
+  ctx.lineTo(prongTops[1].x, prongTops[1].y);
+  ctx.stroke();
+  // Right prong
+  ctx.beginPath();
+  ctx.moveTo(cx + 5, by - 100);
+  ctx.quadraticCurveTo(cx + 15, by - 110, prongTops[2].x, prongTops[2].y);
+  ctx.stroke();
+  // Cross bar
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(cx - 20, by - 95);
+  ctx.lineTo(cx + 20, by - 95);
+  ctx.stroke();
+  // Spawn flames at prong tips
+  for (const pt of prongTops) {
+    if (Math.random() < 0.4) spawnFlame(pt.x, pt.y);
+  }
+  // Draw flames
+  for (let i = flames.length - 1; i >= 0; i--) {
+    const f = flames[i];
+    f.x += f.vx;
+    f.y += f.vy;
+    f.life -= f.decay;
+    f.size *= 0.99;
+    if (f.life <= 0) { flames.splice(i, 1); continue; }
+    const r = Math.min(255, 255);
+    const g = Math.min(255, Math.floor(120 * f.life + 80));
+    const b = Math.floor(30 * f.life);
+    ctx.globalAlpha = f.life * 0.7;
+    ctx.fillStyle = `rgb(${r},${g},${b})`;
+    ctx.beginPath();
+    ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
+    ctx.fill();
+    // Glow
+    ctx.globalAlpha = f.life * 0.15;
+    ctx.fillStyle = `rgb(255,${Math.floor(100*f.life)},0)`;
+    ctx.beginPath();
+    ctx.arc(f.x, f.y, f.size * 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+// ─── SPEECH SYSTEM ───
+const speeches = [
+  { time: 3, text: '"Quando você chama uma <span class="highlight">Pombagira</span>..."', duration: 4 },
+  { time: 8, text: '"...você abre uma porta que <span class="highlight">nem sempre</span> consegue fechar."', duration: 5 },
+  { time: 14, text: '"A <span class="highlight">responsabilidade</span> é de quem invoca."', duration: 4 },
+  { time: 19, text: '"<span class="highlight">Rosa Caveira</span> não vem pra brincadeira..."', duration: 4 },
+  { time: 24, text: '"...ela cobra <span class="highlight">respeito</span>, cobra <span class="highlight">firmeza</span>."', duration: 5 },
+  { time: 30, text: '"E <span class="highlight">Mulambo</span>... ela carrega as dores do mundo..."', duration: 5 },
+  { time: 36, text: '"...e transforma em <span class="highlight">força</span>."', duration: 4 },
+  { time: 41, text: '"Não invoque se não tem <span class="highlight">coragem</span> de encarar a verdade."', duration: 5 },
+  { time: 47, text: '"O caminho da <span class="highlight">encruzilhada</span> exige compromisso."', duration: 5 },
+  { time: 53, text: '"<span class="highlight">Laroyê</span>, Pombagira! <span class="highlight">Mojubá</span>!"', duration: 5 },
+];
+let currentSpeechIdx = -1;
+function updateSpeech(elapsed) {
+  const speechEl = document.getElementById('speech-text');
+  let found = -1;
+  for (let i = 0; i < speeches.length; i++) {
+    if (elapsed >= speeches[i].time && elapsed < speeches[i].time + speeches[i].duration) {
+      found = i;
+      break;
+    }
+  }
+  if (found !== currentSpeechIdx) {
+    currentSpeechIdx = found;
+    if (found >= 0) {
+      speechEl.innerHTML = speeches[found].text;
+      speechEl.classList.add('visible');
+    } else {
+      speechEl.classList.remove('visible');
+    }
+  }
+}
+// ─── CAMERA SYSTEM ───
+const camMoves = [
+  { name: 'FAST DOLLY IN', cls: 'cam-dolly-in', start: 0, end: 12 },
+  { name: 'VERTIGO DOLLY ZOOM', cls: 'cam-vertigo', start: 12, end: 24 },
+  { name: 'FPV DIVE', cls: 'cam-fpv-dive', start: 24, end: 36 },
+  { name: 'CRANE SHOT', cls: 'cam-crane', start: 36, end: 48 },
+  { name: 'ORBIT 180°', cls: 'cam-orbit', start: 48, end: 60 },
+];
+let currentCamIdx = -1;
+function updateCamera(elapsed) {
+  const looped = elapsed % 60;
+  const cam = document.getElementById('camera');
+  const label = document.getElementById('cam-label');
+  let found = -1;
+  for (let i = 0; i < camMoves.length; i++) {
+    if (looped >= camMoves[i].start && looped < camMoves[i].end) { found = i; break; }
+  }
+  if (found !== currentCamIdx) {
+    currentCamIdx = found;
+    cam.className = 'camera-wrapper';
+    if (found >= 0) {
+      cam.classList.add(camMoves[found].cls);
+      label.textContent = camMoves[found].name;
+    }
+  }
+}
+// ─── SPECTRALS ───
+function updateSpectrals(elapsed) {
+  const rosa = document.getElementById('spectral-rosa');
+  const mulambo = document.getElementById('spectral-mulambo');
+  // Rosa Caveira appears around speech about her
+  if ((elapsed >= 17 && elapsed < 30) || (elapsed >= 50)) {
+    rosa.classList.add('visible');
+  } else {
+    rosa.classList.remove('visible');
+  }
+  // Mulambo appears around speech about her
+  if ((elapsed >= 28 && elapsed < 42) || (elapsed >= 50)) {
+    mulambo.classList.add('visible');
+  } else {
+    mulambo.classList.remove('visible');
+  }
+}
+// ─── COLOR WASH ───
+function updateColorWash(elapsed) {
+  const wash = document.getElementById('color-wash');
+  const phase = Math.floor(elapsed / 10) % 5;
+  const colors = [
+    'radial-gradient(ellipse at center, #ff000008, transparent)',
+    'radial-gradient(ellipse at center, #8b000010, transparent)',
+    'radial-gradient(ellipse at center, #ff69b408, transparent)',
+    'radial-gradient(ellipse at center, #9932cc08, transparent)',
+    'radial-gradient(ellipse at center, #ff440008, transparent)',
+  ];
+  wash.style.background = colors[phase];
+  wash.classList.add('active');
+}
+// ─── TIMECODE ───
+function updateTimecode(elapsed) {
+  const h = String(Math.floor(elapsed/3600)).padStart(2,'0');
+  const m = String(Math.floor((elapsed%3600)/60)).padStart(2,'0');
+  const s = String(Math.floor(elapsed%60)).padStart(2,'0');
+  const f = String(Math.floor((elapsed%1)*24)).padStart(2,'0');
+  document.getElementById('timecode').textContent = `${h}:${m}:${s}:${f}`;
+}
+// ─── MAIN LOOP ───
+function mainLoop() {
+  if (!started) return;
+  const elapsed = (Date.now() - startTime) / 1000;
+  updatePetals();
+  drawTrident();
+  updateSpeech(elapsed);
+  updateCamera(elapsed);
+  updateSpectrals(elapsed);
+  updateColorWash(elapsed);
+  updateTimecode(elapsed);
+  requestAnimationFrame(mainLoop);
+}
+// ─── START ───
+function startExperience() {
+  if (started) return;
+  started = true;
+  startTime = Date.now();
+  document.getElementById('entry-screen').classList.add('hidden');
+  setTimeout(() => {
+    document.getElementById('entry-screen').style.display = 'none';
+  }, 1500);
+  document.getElementById('scene').classList.add('active');
+  resizeCanvases();
+  initPetals();
+  mainLoop();
+}
+// ─── INIT ───
+createStars();
+window.addEventListener('resize', resizeCanvases);
+</script>
+</body>
+</html>
